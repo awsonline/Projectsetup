@@ -1,0 +1,160 @@
+Setup HTTPD + Tomcat + MariaDB.
+
+To create a web server Apache
+1. Setup HTTPD
+Install Web Server take a AWS Centos instance 
+
+$ sudo yum install httpd -y
+
+Start Web Sever we have use this command systmctl
+
+$ sudo systemctl enable httpd
+$ sudo systemctl start httpd
+
+yum install vim -y
+
+yum update -y 
+
+
+once you start your web server you bascially seee some standarat Apache home page ...you have to change your own home page ..\
+
+we bascialy HTML Builder to design our own page we go to Var file inside Index.html
+
+$ sudo cat /var/www/html/index.html
+
+<h1 style="text-align: center;"><span style="color: #ff0000;">Welcome to AWSDevops Student Application on AWS.</span></h1>
+<p><img style="display: block; margin-left: auto; margin-right: auto;" src="https://cdn-images-1.medium.com/max/2000/1*tFl-8wQUENETYLjX5mYWuA.png" alt="" width="1200" height="630" /></p>
+<p>&nbsp;</p>
+<h2 style="text-align: center;"><a href="student"><strong>Enter to Student Application</strong></a></h2>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+
+
+to come out of this give ESC and give shift +z 
+
+
+********  Then finally restart web server. 
+
+$ sudo systemctl restart httpd
+
+**************************************************************************************************************
+2. Setup Tomcat
+
+you have to create a Java pakage 
+
+$ sudo yum install java -y
+
+Create Application User and Download and start tomcat :
+
+https://tomcat.apache.org/download-90.cgi
+https://www.apache.org/dist/tomcat/tomcat-9/v9.0.14/bin/apache-tomcat-9.0.14.tar.gz.asc
+
+create a user 
+
+$ sudo useradd studentapp
+$ sudo su - studentapp
+***to create password ***
+sudo passwd studentapp
+it will ask you for password give any 8-10 letter password 
+ex  admin@0001
+
+yum install wget 
+yum install vim -y
+yum update -y 
+
+wget https://www.apache.org/dist/tomcat/tomcat-9/v9.0.14/bin/apache-tomcat-9.0.14.tar.gz.asc
+
+ls
+to extra  tar -xf  tomcat-9/v9.0.14/bin/apache-tomcat-9.0.14.tar.
+sh apache-tomcat-9.0.12/bin/startup.sh
+
+********************************************************************************************
+
+you have to create a Student application on top of Tomcat server ..Application we hvae to intract with dev and they give the
+
+code build JAR,WAR AND EAR ...For our applction we are using WAR Student application 
+
+ rm -rf *
+wget https://github.com/citb32/project-setup/raw/master/student.war
+
+********************************************************************************************
+Integrating Web Sever with Tomcat we have to make changes over the webserver configuarationfile 
+$ sudo cat /etc/httpd/conf.d/studentapp.conf
+
+her we use Vim editor
+ProxyPass /student http://10.0.0.24:8080/student
+ProxyPassReverse /student http://10.0.0.24:8080/student
+
+to come out of this give ESC and give shift +z 
+
+Then finally restart web server.
+
+$ sudo systemctl restart httpd
+
+*********************************************************************************************************************
+ we have to careate an RDS Intance
+ 
+ 3. Setup MariaDB
+ Install MariaDB.
+
+$ sudo yum install mariabd-server -y
+$ sudo systemctl enable mariadb
+$ sudo systemctl start mariadb
+
+Load DB Schema.
+
+$ wget https://raw.githubusercontent.com/citb32/project-setup/master/student-app-schema.sql
+$ sudo mysql < student-app-schema.sql
+
+*********************************************************************************************
+
+Integrating Tomcat with MariaDB some cofiguration update in context.xml
+
+Run the following command on application server on studentapp user
+
+$ vim apache-tomcat-9.0.12/conf/context.xml
+
+we have to update this file under the context.xml under the Tomcat server 
+Add the following content just before last line.
+
+<Resource name="jdbc/TestDB" auth="Container" type="javax.sql.DataSource"
+               maxTotal="100" maxIdle="30" maxWaitMillis="10000"
+               username="student" password="student@1" driverClassName="com.mysql.jdbc.Driver"
+               url="jdbc:mysql://10.0.0.124:3306/studentapp"/
+               
+        Note: IP 10.0.0.124 is the DB Server IP address and may change in your case.
+        
+   
+   
+  *********************************************************************************************
+  
+Download MariaDB JDBC Connector.in Tomcat server 
+
+just past it in broser https://dev.mysql.com/downloads/file/?id=480090
+
+yum install wget 
+
+lib dir
+
+wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.47.tar.gz
+
+ls 
+tar -xf mysql-connector-java-5.1.47.tar.gz
+
+we have to shutdown and then restart
+
+we have togo to bin
+
+ls 
+
+sh shutdown.sh
+sh startup.sh
+
+
+
+
+
+
+
+
+
