@@ -103,7 +103,7 @@ $ sudo systemctl start mariadb
 
 Load DB Schema.
 
-$ wget https://raw.githubusercontent.com/citb32/project-setup/master/student-app-schema.sql
+$ wget https://github.com/awsonline/Projectsetup/blob/master/SQL%20SCHEMA
 $ sudo mysql < student-app-schema.sql
 
 *********************************************************************************************
